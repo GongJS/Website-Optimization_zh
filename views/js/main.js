@@ -1,6 +1,40 @@
+
+/*
+欢迎来到我们的60fps项目！你的目标是使Cam's Pizzeria网站能流畅的运行在60fps下。
+在这里的代码中主要有两个问题使性能低于60fps。你能发现并修复它们吗？
+在代码中，你会发现一些使用User Timing API(window.performance)的例子，它们使用
+console.log()将帧率数据输入到浏览器的控制台中。如果你想了解更多关于User Timing API
+的信息，请访问：http://www.html5rocks.com/en/tutorials/webperformance/usertiming/
+创建者:
+Cameron Pittman, Udacity 课程开发者
+cameron@udacity.com
+*/
+
+// 你可能已经发现了，这个网站会随机地生成披萨。
+// 下面的数组是所有可能组成披萨的原料。
+
 var pizzaIngredients = {};
 pizzaIngredients.meats = [
-  "Pepperoni","Sausage","Fennel Sausage","Spicy Sausage","Chicken","BBQ Chicken","Chorizo","Chicken Andouille","Salami","Tofu","Bacon","Canadian Bacon","Proscuitto","Italian Sausage","Ground Beef","Anchovies","Turkey","Ham","Venison", "Lamb","Duck",
+  "Pepperoni","Sausage",
+  "Fennel Sausage",
+  "Spicy Sausage",
+  "Chicken",
+  "BBQ Chicken",
+  "Chorizo",
+  "Chicken Andouille",
+  "Salami",
+  "Tofu",
+  "Bacon",
+  "Canadian Bacon",
+  "Proscuitto",
+  "Italian Sausage",
+  "Ground Beef",
+  "Anchovies",
+  "Turkey",
+  "Ham",
+  "Venison",
+  "Lamb",
+  "Duck",
   "Soylent Green",
   "Carne Asada",
   "Soppressata Picante",
@@ -101,12 +135,13 @@ pizzaIngredients.crusts = [
   "Stuffed Crust"
 ];
 
-
+// 名称生成器取自 http://saturdaykid.com/usernames/generator.html
+// 将每个单词的首字母大写
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-
+// 用生成器发出的随机数来从数组中取出形容词，形容pizza的颜色口味等等
 function getAdj(x){
   switch(x) {
     case "dark":
@@ -170,7 +205,7 @@ function getAdj(x){
   }
 }
 
-
+// 用生成器发出的随机数来从数组中取出名词
 function getNoun(y) {
   switch(y) {
     case "animals":
@@ -243,7 +278,7 @@ function getNoun(y) {
 var adjectives = ["dark", "color", "whimsical", "shiny", "noisy", "apocalyptic", "insulting", "praise", "scientific"];
 var nouns = ["animals", "everyday", "fantasy", "gross", "horror", "jewelry", "places", "scifi"];
 
-
+// 生成器随机地为getAdj和getNoun函数生成数字，并返回一个新的披萨名称
 function generator(adj, noun) {
   var adjectives = getAdj(adj);
   var nouns = getNoun(noun);
@@ -253,12 +288,14 @@ function generator(adj, noun) {
   return name;
 }
 
+// 选择随机的形容词及名词
 function randomName() {
   var randomNumberAdj = parseInt(Math.random() * adjectives.length);
   var randomNumberNoun = parseInt(Math.random() * nouns.length);
   return generator(adjectives[randomNumberAdj], nouns[randomNumberNoun]);
 }
 
+// 这些函数从各自的原料目录中取出并返回随机的原料
 var selectRandomMeat = function() {
   var randomMeat = pizzaIngredients.meats[Math.floor((Math.random() * pizzaIngredients.meats.length))];
   return randomMeat;
@@ -288,7 +325,7 @@ var ingredientItemizer = function(string) {
   return "<li>" + string + "</li>";
 };
 
-// Returns a string with random pizza ingredients nested inside <li> tags
+// 返回嵌套在<li>中的披萨原料字符串
 var makeRandomPizza = function() {
   var pizza = "";
 
@@ -314,7 +351,7 @@ var makeRandomPizza = function() {
   return pizza;
 };
 
-
+// 为每个披萨分别返回一个DOM元素
 var pizzaElementGenerator = function(i) {
   var pizzaContainer,
       pizzaImageContainer,
@@ -331,7 +368,7 @@ var pizzaElementGenerator = function(i) {
   pizzaContainer.classList.add("randomPizzaContainer");
   pizzaContainer.style.width = "33.33%";
   pizzaContainer.style.height = "325px";
-  pizzaContainer.id = "pizza" + i;
+  pizzaContainer.id = "pizza" + i;          // 给每个披萨元素赋一个独一无二的id
   pizzaImageContainer.style.width="35%";
 
   pizzaImage.src = "images/pizza.png";
@@ -354,10 +391,11 @@ var pizzaElementGenerator = function(i) {
   return pizzaContainer;
 };
 
-
+// 当网站中"Our Pizzas"的滑窗部分移动时调用resizePizzas(size)函数
 var resizePizzas = function(size) {
-  window.performance.mark("mark_start_resize");
+  window.performance.mark("mark_start_resize");    // User Timing API 函数
 
+ // 改变滑窗前披萨的尺寸值
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
@@ -376,37 +414,25 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
+// 遍历披萨的元素并改变它们的宽度
 
-  function determineDx (elem, size) {
-    var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldSize = oldWidth / windowWidth;
-
-
-    function sizeSwitcher (size) {
+  function changePizzaSizes (size) {
       switch(size) {
         case "1":
-          return 0.25;
+          newWidth = 25;
+          break;
         case "2":
-          return 0.3333;
+          newWidth = 33.3;
+          break;
         case "3":
-          return 0.5;
+          newWidth = 50;
+          break;
         default:
           console.log("bug in sizeSwitcher");
       }
-    }
-
-    var newSize = sizeSwitcher(size);
-    var dx = (newSize - oldSize) * windowWidth;
-
-    return dx;
-  }
-
-  function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
+    for (var i = 0; i < randomPizzas.length; i++) {
+        randomPizzas[i].style.width = newwidth + "%";
     }
   }
 
