@@ -1,55 +1,43 @@
-## Website Performance Optimization portfolio project
+## 网站性能优化项目
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+### 如何开始此应用
 
-To get started, check out the repository and inspect the code.
+以下是几个能帮助你顺利开始本项目的提示:
 
-### Getting started
+1. 给谷歌浏览器装上pagespeed insights插件
 
-#### Part 1: Optimize PageSpeed Insights score for index.html
+2. 把项目代码clone到本地
 
-Some useful tips to help you get started:
-
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+3. 用node搭一个本地服务器
 
   ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
+  $> 在终端或命令行中输入 node --version。如果没有内容显示或显示错误，(则需安装 Node）
+  $> 输入 npm install -g http-server
+  $> 通过输入 http-server ~/Documents/mysite -p 8000 提供文件（将 ~/Documents/mysite 替换为你的项目目录的路径）
+  $> 在谷歌浏览器中访问 http://localhost:8000/index，进行测试
   ```
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to the top-level of your project directory to make your local server accessible remotely.
+4. 打开后，可以点击Build Your Own 2048!、Website Performance Optimization、Mobile Web Development、Cam's Pizzeria这四个网页的详细介绍。并且，在Cam's Pizzeria这个中，可以使用拖动条，来改变pizza的大小。
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ./ngrok http 8080
-  ```
+# 项目优化
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+### Index.html优化步骤
+* 根据pagespeed的提示，用tinypng把项目里的图片进行压缩；把大图片pizzeria.jpg的尺寸直接改成100x75，使该图片的体积从M级下降到KB级
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+* 由于没有别的页面共享style.css文件，所以把style.css从外部引用改成内联，可以减少一次请求的时间
 
-#### Part 2: Optimize Frames per Second in pizza.html
+* 通过媒体查询的方式把print.css修改为只在打印的时候才加载
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js. 
+* analytics.js添加async属性，改成异步加载该文件
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
+  ​
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+  ​
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
+### pizza.html的优化
 
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
+* 把动画函数updatePositions（）放到requestAnimationFrame（）里面，使动画能够并行运行，并且保证优先运行js
+* 根据课程内容，determineDx（）函数在网页中不仅没有起作用，还在循环中频繁修改pizza的尺寸改造成强制同步布局，需删除；另外把大pizza的尺寸大小的样式从px改成用百分比来呈现
+* document.querySelectorAll(".randomPizzaContainer")函数在文中重复出现达三次，用变量randomPizzas取代，可以节省2次查询节点的时间
+* 通过读取浏览器的高度和小pizza的尺寸，来判断页面中最多可以显示多少个小pizza，从而减少生成不必要的小pizza
+* 给小pizza的.move样式添加change:transform属性，避免页面在上下滑动时候引起小pizza的重新绘制
