@@ -415,7 +415,6 @@ var resizePizzas = function(size) {
   changeSliderLabel(size);
 
 // 遍历披萨的元素并改变它们的宽度
-
   function changePizzaSizes (size) {
       switch(size) {
         case "1":
@@ -430,39 +429,41 @@ var resizePizzas = function(size) {
         default:
           console.log("bug in sizeSwitcher");
       }
-    var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
-    for (var i = 0; i < randomPizzas.length; i++) {
-        randomPizzas[i].style.width = newwidth + "%";
+     var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
+     for (var i = 0; i < randomPizzas.length; i++) {
+        randomPizzas[i].style.width = newWidth + "%";
     }
   }
 
   changePizzaSizes(size);
 
-  // User Timing API is awesome
+  //  User Timing API 太棒了
   window.performance.mark("mark_end_resize");
   window.performance.measure("measure_pizza_resize", "mark_start_resize", "mark_end_resize");
   var timeToResize = window.performance.getEntriesByName("measure_pizza_resize");
   console.log("Time to resize pizzas: " + timeToResize[timeToResize.length-1].duration + "ms");
 };
 
-window.performance.mark("mark_start_generating");
+window.performance.mark("mark_start_generating");  // 收集timing数据
 
+// 这个for循环在页面加载时创建并插入了所有的披萨
 for (var i = 2; i < 100; i++) {
   var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
-
+//使用User Timing API。这里的测量数据告诉了你生成初始的披萨用了多长时间
 window.performance.mark("mark_end_generating");
 window.performance.measure("measure_pizza_generation", "mark_start_generating", "mark_end_generating");
 var timeToGenerate = window.performance.getEntriesByName("measure_pizza_generation");
 console.log("Time to generate pizzas on load: " + timeToGenerate[0].duration + "ms");
 
-
+// 背景披萨滚动时调用函数的次数和
+// 由updatePositions()函数使用，用来决定什么时候记录平均帧率
 var frame = 0;
 
 
-function logAverageFrame(times) {
+function logAverageFrame(times) {   // times参数是updatePositions()由User Timing得到的测量数据
   var numberOfEntries = times.length;
   var sum = 0;
   for (var i = numberOfEntries - 1; i > numberOfEntries - 11; i--) {
@@ -476,10 +477,20 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
+  var phase = [];
+  //将读操作与写操作分离开，全部读到后，再批量处理，防止同步布局
+  //scrollTop的获取放在循环体外部，就不用每次循环都计算了
+  var currentPosition = document.body.scrollTop;
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    phase[i] = Math.sin((currentPosition / 1250) + (i % 5));
+    //items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
+  for(var i = 0; i < phase.length; i++) {
+    items[i].style.left = items[i].basicLeft + 100 * phase[i] + 'px';
+  }
+
+  // 再次使用User Timing API
+ // 能够很容易地自定义测量维度
   window.performance.mark("mark_end_frame");
   window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
   if (frame % 10 === 0) {
@@ -488,14 +499,19 @@ function updatePositions() {
   }
 }
 
-
+// 在页面滚动时运行updatePositions函数
+// 使用requestAnimationFrame可以防止掉帧
+requestAnimationFrame(updatePositions);
 window.addEventListener('scroll', updatePositions);
 
-
+// 当页面加载时生成披萨滑窗
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  //pizza 数量 = (浏览器高度 / s) * cols
+  var PizzaNumber = (window.outerHeight/s) * cols;
+  //减少pizza的数量，从而减少生成不必要的pizza
+  for (var i = 0; i < PizzaNumber; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
