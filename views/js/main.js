@@ -360,35 +360,35 @@ var pizzaElementGenerator = function(i) {
       pizzaName,
       ul;
 
-  pizzaContainer = document.createElement("div");
-  pizzaImageContainer = document.createElement("div");
-  pizzaImage = document.createElement("img");
-  pizzaDescriptionContainer = document.createElement("div");
+      pizzaContainer = document.createElement("div");
+      pizzaImageContainer = document.createElement("div");
+      pizzaImage = document.createElement("img");
+      pizzaDescriptionContainer = document.createElement("div");
 
-  pizzaContainer.classList.add("randomPizzaContainer");
-  pizzaContainer.style.width = "33.33%";
-  pizzaContainer.style.height = "325px";
-  pizzaContainer.id = "pizza" + i;          // 给每个披萨元素赋一个独一无二的id
-  pizzaImageContainer.style.width="35%";
+      pizzaContainer.classList.add("randomPizzaContainer");
+      pizzaContainer.style.width = "33.33%";
+      pizzaContainer.style.height = "325px";
+      pizzaContainer.id = "pizza" + i;          // 给每个披萨元素赋一个独一无二的id
+      pizzaImageContainer.style.width="35%";
 
-  pizzaImage.src = "images/pizza.png";
-  pizzaImage.classList.add("img-responsive");
-  pizzaImageContainer.appendChild(pizzaImage);
-  pizzaContainer.appendChild(pizzaImageContainer);
+      pizzaImage.src = "images/pizza.png";
+      pizzaImage.classList.add("img-responsive");
+      pizzaImageContainer.appendChild(pizzaImage);
+      pizzaContainer.appendChild(pizzaImageContainer);
 
 
-  pizzaDescriptionContainer.style.width="65%";
+      pizzaDescriptionContainer.style.width="65%";
 
-  pizzaName = document.createElement("h4");
-  pizzaName.innerHTML = randomName();
-  pizzaDescriptionContainer.appendChild(pizzaName);
+      pizzaName = document.createElement("h4");
+      pizzaName.innerHTML = randomName();
+      pizzaDescriptionContainer.appendChild(pizzaName);
 
-  ul = document.createElement("ul");
-  ul.innerHTML = makeRandomPizza();
-  pizzaDescriptionContainer.appendChild(ul);
-  pizzaContainer.appendChild(pizzaDescriptionContainer);
+      ul = document.createElement("ul");
+      ul.innerHTML = makeRandomPizza();
+      pizzaDescriptionContainer.appendChild(ul);
+      pizzaContainer.appendChild(pizzaDescriptionContainer);
 
-  return pizzaContainer;
+      return pizzaContainer;
 };
 
 // 当网站中"Our Pizzas"的滑窗部分移动时调用resizePizzas(size)函数
@@ -478,19 +478,19 @@ function updatePositions() {
 
   var items = document.querySelectorAll('.mover');
   var phase = [];
-  //将读操作与写操作分离开，全部读到后，再批量处理，防止同步布局
-  //scrollTop的获取放在循环体外部，就不用每次循环都计算了
+
+   //scrollTop的获取放在循环体外部，就不用每次循环都计算了
   var currentPosition = document.body.scrollTop;
+   //先统一读取位置数据，再批量更改
   for (var i = 0; i < items.length; i++) {
     phase[i] = Math.sin((currentPosition / 1250) + (i % 5));
-    //items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
   for(var i = 0; i < phase.length; i++) {
     items[i].style.left = items[i].basicLeft + 100 * phase[i] + 'px';
   }
 
   // 再次使用User Timing API
- // 能够很容易地自定义测量维度
+  // 能够很容易地自定义测量维度
   window.performance.mark("mark_end_frame");
   window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
   if (frame % 10 === 0) {
@@ -508,9 +508,8 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  //pizza 数量 = (浏览器高度 / s) * cols
+  //计算浏览器最多能同时显示多少个Pizza
   var PizzaNumber = (window.outerHeight/s) * cols;
-  //减少pizza的数量，从而减少生成不必要的pizza
   for (var i = 0; i < PizzaNumber; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
