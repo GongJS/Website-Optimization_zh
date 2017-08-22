@@ -30,6 +30,8 @@
 
 * analytics.js添加async属性，改成异步加载该文件
 
+* 使用异步下载方式加载google字体
+
   ​
 
   ​
@@ -41,3 +43,4 @@
 * document.querySelectorAll(".randomPizzaContainer")函数在文中重复出现达三次，用变量randomPizzas取代，可以节省2次查询节点的时间
 * 通过读取浏览器的高度和小pizza的尺寸，来判断页面中最多可以显示多少个小pizza，从而减少生成不必要的小pizza
 * 给小pizza的.move样式添加change:transform属性，避免页面在上下滑动时候引起小pizza的重新绘制
+* 使用getElementById替代querySelector，getElementByClassName代替querySelectorAll，选取节点的速度更快

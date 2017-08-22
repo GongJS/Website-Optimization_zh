@@ -399,13 +399,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -429,7 +429,7 @@ var resizePizzas = function(size) {
         default:
           console.log("bug in sizeSwitcher");
       }
-     var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
+     var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
      for (var i = 0; i < randomPizzas.length; i++) {
         randomPizzas[i].style.width = newWidth + "%";
     }
@@ -476,7 +476,7 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
+  var items = document.getElementsByClassName('mover');
   var phase = [];
 
    //scrollTop的获取放在循环体外部，就不用每次循环都计算了
@@ -508,8 +508,8 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  //计算浏览器最多能同时显示多少个Pizza
-  var PizzaNumber = (window.outerHeight/s) * cols;
+  //计算浏览器最多能同时显示多少个Pizza  pizza背景高度从下方可知为100
+  var PizzaNumber = (window.outerHeight/100) * cols;
   for (var i = 0; i < PizzaNumber; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    document.getElementById("movingPizzas1").appendChild(elem);
   }
   updatePositions();
 });
